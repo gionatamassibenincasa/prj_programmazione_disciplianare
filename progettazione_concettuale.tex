@@ -1,0 +1,105 @@
+\documentclass[a4paper,12pt,landscape]{article}
+
+\usepackage[landscape]{geometry}
+\usepackage{graphicx}
+
+\usepackage{tikz-er2}
+
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{shadows}
+\usetikzlibrary{arrows, decorations.markings}
+
+\tikzstyle{every entity} = [top color=white, bottom color=blue!30, 
+                            draw=blue!50!black!100, drop shadow]
+\tikzstyle{every weak entity} = [drop shadow={shadow xshift=.7ex, 
+                                 shadow yshift=-.7ex}]
+\tikzstyle{every attribute} = [top color=white, bottom color=yellow!20, 
+                               draw=yellow, node distance=1cm, drop shadow]
+\tikzstyle{every relationship} = [top color=white, bottom color=red!20, 
+                                  draw=red!50!black!100, drop shadow]
+\tikzstyle{every isa} = [top color=white, bottom color=green!20, 
+                         draw=green!50!black!100, drop shadow]
+
+\tikzstyle{generalization} = [thick, decoration={markings,mark=at position
+   1 with {\arrow[semithick,scale=2]{open triangle 60}}},
+   double distance=4pt, shorten >= 11pt,
+   preaction = {decorate},
+   postaction = {draw,line width=4pt, white,shorten >= 9pt}]
+\tikzstyle{innerWhite} = [thick, white,line width=2.8pt, shorten >= 10pt]
+
+\centering
+\scalebox{.7}{%
+\begin{tikzpicture}[node distance=1.5cm, every edge/.style={link}]
+
+  %
+  % MODELLO
+  %
+  \node[entity] (modello) {Modello};
+  \node[attribute] (amodellocodice) [above left=of modello] {\key{Codice}} edge (modello);
+  \node[attribute] (amodelloversione) [above =of modello] {Versione} edge (modello);
+  \node[attribute] (amodellonome) [above right=of modello] {Nome} edge (modello);
+  
+  \node[relationship] (compilare) [below=of modello] {Compilazione}
+                        edge node [auto,swap] {1:1} (modello);
+  
+  %
+  % MODULO COMPILATO
+  %
+  \node[entity] (modulo) [below=of compilare] {Modulo}
+                        edge node [auto,swap] {0:N} (compilare);
+  \node[attribute] (amoduloas) [above right=of modulo] {Anno Scolastico} edge (modulo);
+  \node[attribute] (amodulopubblicazione) [right=of modulo] {Data pubblicazione} edge (modulo);
+  
+  %
+  % REDAZIONE
+  %
+  \node[relationship] (redigere) [left=of modulo] {Redazione}
+                        edge node [auto,swap] {0:N} (modulo);
+  \node[attribute] (adatainizio) [above=of redigere] {Data revisione}
+						edge (redigere);
+  %
+  % DOCENTE
+  %
+  \node[entity] (docente) [left=of redigere] {Docente}
+                        edge node [auto,swap] {1:N} (redigere);
+  
+  
+  \node[relationship] (insegnare) [below=of docente] {Docenza}
+                        edge node [auto,swap] {0:N} (docente);
+  
+  \node[entity] (disciplina) [below=of insegnare] {Disciplina}
+                        edge node [auto,swap] {1:1} (insegnare);
+  
+  \node[relationship] (raggruppare) [left=of disciplina] {Raggruppamento}
+                        edge node [auto,swap] {0:N} (disciplina);
+  
+  \node[entity] (dipartimento) [left=of raggruppare] {Dipartimento}
+                        edge node [auto,swap] {1:1} (raggruppare);
+  
+  \node[relationship] (afferire) at (dipartimento |- docente) {Afferenza}
+                        edge node [auto,swap] {0:N} (docente);
+  
+  \draw (dipartimento) edge node [auto,swap] {1:1} (afferire);
+  
+  \node[relationship] (riferirsi) [right=of disciplina] {Riferirsi}
+                        edge node [auto, swap] {1:1} (disciplina);
+  
+  \node[entity] (programmazione) at (riferirsi -| modulo) {Programmazione}
+                        edge node [auto,swap] {1:1} (riferirsi);
+  
+  \draw[generalization] (programmazione) to (modulo);
+  
+  \node[relationship] (vincolare) [right=of programmazione] {Vincolo}
+					  edge node [auto,swap] {1:1} (programmazione);
+  \node[entity] (classi) [right=of vincolare] {ClassiParallele}
+					  edge node [auto,swap] {1:1} (vincolare);
+  
+
+\end{tikzpicture}
+}
+\end{document}
