@@ -39,7 +39,7 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
  \begin{figure}[H]
  	\centering
 	\caption{La modulistica redatta dai docenti che include il caso particolare della programmazione didattica}
-	\scalebox{.8}{\fbox{ %%
+	%\scalebox{1}{\fbox{
 	\begin{tikzpicture}[node distance=1.5cm, every edge/.style={link}]
 
   % ---------
@@ -148,11 +148,13 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   \node[attribute](aclassiarticolazione)[below right=of classi]{Articolazione} edge (classi);
   \node[attribute](aclassiopzione)[below=of classi]{Opzione} edge (classi);
  \end{tikzpicture}
-}}
+ %}}
 \end{figure}
 
-\centering
-\scalebox{.65}{%
+ \begin{figure}[H]
+ 	\centering
+ 	\caption{Il caso particolare della programmazione didattica}
+ 	%\scalebox{1}{\fbox{
 	\begin{tikzpicture}[node distance=1.5cm, every edge/.style={link}]
 
   % ----------------
@@ -186,7 +188,6 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   \node[entity] (uc) [below=of aggregare] {UC} edge node [auto,swap] {1:N} (aggregare);
   \node[attribute](auctitolo)[below left=of uc]{Titolo} edge (uc);
   
-  
   %      /\
   % <Metodologia>
   %      \/
@@ -201,13 +202,42 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % <Certificazione>
   %       \/
   \node[relationship] (certificazione) [right=of uc] {Cerficazione} edge node [auto, swap] {0:N} (uc);
-  
-  % -----------
+
+  % ----------
   % |Verifica|
-  % -----------
+  % ----------
   \node[entity] (verifica) [right=of certificazione] {Verifica} edge node [auto,swap] {1:N} (certificazione);
   
+  %     /\
+  % <Compone>>
+  %     \/
+  \node[relationship] (composizione) [below=of uc] {Compone} edge node [auto, swap] {0:N} (uc);
   
-\end{tikzpicture}
-}
+  % -----------
+  % |Competenza|
+  % -----------
+  \node[entity] (competenza) [below=of composizione] {Competenza} edge node [auto,swap] {1:N} (composizione);
+  
+  %      /\
+  % <Saper fare>
+  %      \/
+  \node[relationship] (saperfare) [left=of competenza] {Saper fare} edge node [auto, swap] {0:N} (competenza);
+  
+  % ----------
+  % |Abilita'|
+  % ----------
+  \node[entity] (abilita) [left=of saperfare]{Abilit\`a} edge node [auto,swap] {0:N} (saperfare);
+  
+  %    /\
+  % <Sapere>
+  %    \/
+  \node[relationship] (sapere) [right=of competenza] {Sapere} edge node [auto, swap] {0:N} (competenza);
+  
+  % ------------
+  % |Conoscenza|
+  % ------------
+  \node[entity] (conoscenza) [right=of sapere]{Conoscenza} edge node [auto,swap] {1:N} (sapere);
+      
+  \end{tikzpicture}
+\end{figure}
 \end{document}
