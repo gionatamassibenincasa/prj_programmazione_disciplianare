@@ -153,13 +153,26 @@
   %     \/
   \node[relationship] (programmare) [below=of programmazione] {Programma} edge node [auto, swap] {0:N} (programmazione);
   \node[attribute](aprogrammareinizio)[below left=of programmare]{Inizio} edge (programmare);
-  \node[attribute](aprogrammareinizio)[below right=of programmare]{Fine} edge (programmare);
+  \node[attribute](aprogrammaredurata)[below right=of programmare]{Durata} edge (programmare);
   
   % -----
   % |UFC|
   % -----
   \node[entity] (ufc) [below=of programmare] {UFC} edge node [auto,swap] {1:N} (programmare);
+  \node[attribute](aufctitolo)[below left=of ufc]{Titolo} edge (ufc);
+  \node[attribute](aufctipo)[below right=of ufc]{Tipo} edge (ufc);
+  \node (aufctipoenum) [right=of aufctipo] {\{di base/trasversale/tecnico-professionale\}};
+
+  %    /\
+  % <Aggrega>
+  %    \/
+  \node[relationship] (aggregare) [below=of ufc] {Aggrega} edge node [auto, swap] {0:N} (ufc);
   
+  % -----
+  % |UC|
+  % -----
+  \node[entity] (uc) [below=of aggregare] {UC} edge node [auto,swap] {1:N} (aggregare);
+  \node[attribute](auctitolo)[below left=of uc]{Titolo} edge (uc);      
 \end{tikzpicture}
 }
 \end{document}
