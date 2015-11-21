@@ -1,41 +1,46 @@
-\documentclass[a4wide,12pt,landscape]{article}
+\documentclass[a3paper,12pt]{report}
 %\documentclass{standalone}
 
-\usepackage[landscape]{geometry}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\geometry{a3paper,
+	landscape,
+	total={410 mm, 287 mm}, % 297x420
+	left=5mm,
+	top=5mm}
 \usepackage{graphicx}
-
 \usepackage{tikz-er2}
-
-
-\begin{document}
-
-\thispagestyle{empty}
-
 \usetikzlibrary{positioning}
 \usetikzlibrary{shadows}
 \usetikzlibrary{arrows, decorations.markings}
 
 \tikzstyle{every entity} = [top color=white, bottom color=blue!30, 
-         draw=blue!50!black!100, drop shadow]
+draw=blue!50!black!100, drop shadow]
 \tikzstyle{every weak entity} = [drop shadow={shadow xshift=.7ex, 
-              shadow yshift=-.7ex}]
+	shadow yshift=-.7ex}]
 \tikzstyle{every attribute} = [top color=white, bottom color=yellow!20, 
-            draw=yellow, node distance=1cm, drop shadow]
+draw=yellow, node distance=1cm, drop shadow]
 \tikzstyle{every relationship} = [top color=white, bottom color=red!20, 
-               draw=red!50!black!100, drop shadow]
+draw=red!50!black!100, drop shadow]
 \tikzstyle{every isa} = [top color=white, bottom color=green!20, 
-      draw=green!50!black!100, drop shadow]
+draw=green!50!black!100, drop shadow]
 
 \tikzstyle{generalization} = [thick, decoration={markings,mark=at position
-   1 with {\arrow[semithick,scale=2]{open triangle 60}}},
-   double distance=4pt, shorten >= 11pt,
-   preaction = {decorate},
-   postaction = {draw,line width=4pt, white,shorten >= 9pt}]
+	1 with {\arrow[semithick,scale=2]{open triangle 60}}},
+double distance=4pt, shorten >= 11pt,
+preaction = {decorate},
+postaction = {draw,line width=4pt, white,shorten >= 9pt}]
 \tikzstyle{innerWhite} = [thick, white,line width=2.8pt, shorten >= 10pt]
 
-\centering
-\scalebox{.65}{%
-\begin{tikzpicture}[node distance=1.5cm, every edge/.style={link}]
+\pagestyle{empty}
+
+\begin{document}
+
+ \begin{figure}[H]
+ 	\centering
+	\caption{La modulistica redatta dai docenti che include il caso particolare della programmazione didattica}
+	\scalebox{.8}{\fbox{ %%
+	\begin{tikzpicture}[node distance=1.5cm, every edge/.style={link}]
 
   % ---------
   % |MODELLO|
@@ -54,10 +59,16 @@
   % |MODULO COMPILATO|
   % ------------------
   \node[entity] (modulo) [below=of compilare] {Modulo} edge node [auto,swap] {0:N} (compilare);
+  \node[attribute] (amoduloprotocollo) [above right=of modulo] {\key{Protocollo}} edge (modulo);
   \node[attribute] (amoduloas) [below right=of modulo] {Anno scolastico} edge (modulo);
+  %
+  % Attributo multiplo "data pubblicazione"
+  %
   \node[attribute] (amodulopubblicazione) [right=of modulo] {Data pubblicazione} edge (modulo);
-  \node[attribute] (amoduloprotocollo) [above right=of modulo] {Protocollo} edge (modulo);
-  
+  \node[attribute] (amodulopubblicazioneyy) [above right=of amodulopubblicazione] {\key{Anno}} edge (amodulopubblicazione);
+  \node[attribute] (amodulopubblicazionemm) [right=of amodulopubblicazione] {Mese} edge (amodulopubblicazione);
+  \node[attribute] (amodulopubblicazionegg) [below right=of amodulopubblicazione] {Giorno} edge (amodulopubblicazione);
+        
   %    /\
   % <REDIGE>
   %    \/
@@ -137,7 +148,8 @@
   \node[attribute](aclassiarticolazione)[below right=of classi]{Articolazione} edge (classi);
   \node[attribute](aclassiopzione)[below=of classi]{Opzione} edge (classi);
  \end{tikzpicture}
-}  
+}}
+\end{figure}
 
 \centering
 \scalebox{.65}{%
@@ -172,7 +184,30 @@
   % |UC|
   % -----
   \node[entity] (uc) [below=of aggregare] {UC} edge node [auto,swap] {1:N} (aggregare);
-  \node[attribute](auctitolo)[below left=of uc]{Titolo} edge (uc);      
+  \node[attribute](auctitolo)[below left=of uc]{Titolo} edge (uc);
+  
+  
+  %      /\
+  % <Metodologia>
+  %      \/
+  \node[relationship] (metodologia) [left=of uc] {Metodologia} edge node [auto, swap] {0:N} (uc);
+  
+  % -----------
+  % |Didattica|
+  % -----------
+  \node[entity] (didattica) [left=of metodologia] {Didattica} edge node [auto,swap] {1:N} (metodologia);
+  
+  %       /\
+  % <Certificazione>
+  %       \/
+  \node[relationship] (certificazione) [right=of uc] {Cerficazione} edge node [auto, swap] {0:N} (uc);
+  
+  % -----------
+  % |Verifica|
+  % -----------
+  \node[entity] (verifica) [right=of certificazione] {Verifica} edge node [auto,swap] {1:N} (certificazione);
+  
+  
 \end{tikzpicture}
 }
 \end{document}
