@@ -120,12 +120,12 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   %
   % Regola
   %
-  \node[relationship] (riferirsi) [right=of disciplina] {Regola} edge node [auto, swap] {0:N} (disciplina);
+  \node[relationship] (riferirsi) [right=of disciplina] {Regola} edge node [auto, swap] {1:1} (disciplina);
   
   % ----------------
   % |PROGRAMMAZIONE|
   % ----------------
-  \node[entity] (programmazione) at (riferirsi -| modulo) {Programmazione} edge node [auto,swap] {1:1} (riferirsi);
+  \node[entity] (programmazione) at (riferirsi -| modulo) {Programmazione} edge node [auto,swap] {0:N} (riferirsi);
   
   %
   % Generalizzazione
@@ -135,7 +135,7 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   %    /\
   % <VINCOLA>
   %    \/
-  \node[relationship] (vincolare) [right=of programmazione] {Vincola} edge node [auto,swap] {0:1} (programmazione);
+  \node[relationship] (vincolare) [right=of programmazione] {Vincola} edge node [auto,swap] {0:N} (programmazione);
   
   % ------------------
   % |Classi Parallele|
@@ -166,28 +166,35 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % <Pianifica>
   %     \/
   \node[relationship] (programmare) [below=of programmazione] {Programma} edge node [auto, swap] {0:N} (programmazione);
-  \node[attribute](aprogrammareinizio)[below left=of programmare]{Inizio} edge (programmare);
-  \node[attribute](aprogrammaredurata)[below right=of programmare]{Durata} edge (programmare);
+  \node[attribute](aprogrammareinizio)[left=of programmare]{Inizio} edge (programmare);
+  \node[attribute](aprogrammaredurata)[right=of programmare]{Durata} edge (programmare);
   
   % -----
   % |UFC|
   % -----
   \node[entity] (ufc) [below=of programmare] {UFC} edge node [auto,swap] {1:N} (programmare);
-  \node[attribute](aufctitolo)[below left=of ufc]{Titolo} edge (ufc);
-  \node[attribute](aufctipo)[below right=of ufc]{Tipo} edge (ufc);
+  \node[attribute](aufctitolo)[left=of ufc]{Titolo} edge (ufc);
+  \node[attribute](aufctipo)[right=of ufc]{Tipo} edge (ufc);
   \node (aufctipoenum) [right=of aufctipo] {\{di base/trasversale/tecnico-professionale\}};
 
   %    /\
   % <Aggrega>
   %    \/
-  \node[relationship] (aggregare) [below=of ufc] {Aggrega} edge node [auto, swap] {0:N} (ufc);
+  \node[relationship] (aggregare) [below left=of ufc] {Aggrega} edge node [auto, swap] {0:N} (ufc);
   
+  %      /\
+  % <Prerequisito>
+  %      \/
+  \node[relationship] (prerequisito) [below right=of ufc] {\scriptsize Prerequisito} edge node [auto, swap] {0:N} (ufc);
+
   % -----
   % |UC|
   % -----
-  \node[entity] (uc) [below=of aggregare] {UC} edge node [auto,swap] {1:N} (aggregare);
+  \node[entity] (uc) [below right=of aggregare] {UC} edge node [auto,swap] {1:N} (aggregare);
   \node[attribute](auctitolo)[below left=of uc]{Titolo} edge (uc);
-  
+    % link mancante
+  \draw (prerequisito) edge node [auto,swap] {0:N} (uc);
+    
   %      /\
   % <Metodologia>
   %      \/
@@ -197,7 +204,9 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % |Didattica|
   % -----------
   \node[entity] (didattica) [left=of metodologia] {Didattica} edge node [auto,swap] {1:N} (metodologia);
-  
+  \node[attribute](adidatticastategia)[above left=of didattica]{Strategia} edge (didattica);
+  \node[attribute](adidatticastrumento)[below left=of didattica]{Strumento} edge (didattica);
+      
   %       /\
   % <Certificazione>
   %       \/
@@ -207,7 +216,11 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % |Verifica|
   % ----------
   \node[entity] (verifica) [right=of certificazione] {Verifica} edge node [auto,swap] {1:N} (certificazione);
-  
+  \node[attribute](averificatipovalutatore)[above right=of verifica]{TipoValutatore} edge (verifica);
+  \node[attribute](averificatipoprova)[right=of verifica]{TipoProva} edge (verifica);
+  \node[attribute](averificalivello)[below right=of verifica]{Livello (DM 9)} edge (verifica);
+  \node[attribute](averificalivello)[below=of verifica]{Struttura} edge (verifica);
+    
   %     /\
   % <Compone>>
   %     \/
@@ -217,7 +230,10 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % |Competenza|
   % -----------
   \node[entity] (competenza) [below=of composizione] {Competenza} edge node [auto,swap] {1:N} (composizione);
-  
+  \node[attribute](acompetenzatitolo)[below left=of competenza]{Descrizione} edge (competenza);
+  \node[attribute](acompetenzaobminimo)[below right=of competenza]{Ob. minimo} edge (competenza);
+  \node[attribute](acompetenzaasse)[above right=of competenza]{Asse culturale} edge (competenza);
+      
   %      /\
   % <Saper fare>
   %      \/
@@ -227,7 +243,9 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % |Abilita'|
   % ----------
   \node[entity] (abilita) [left=of saperfare]{Abilit\`a} edge node [auto,swap] {0:N} (saperfare);
-  
+  \node[attribute](aabilitatitolo)[left=of abilita]{Descrizione} edge (abilita);
+  \node[attribute](aabilitaobminimo)[above=of abilita]{Ob. minimo} edge (abilita);
+    
   %    /\
   % <Sapere>
   %    \/
@@ -237,7 +255,33 @@ postaction = {draw,line width=4pt, white,shorten >= 9pt}]
   % |Conoscenza|
   % ------------
   \node[entity] (conoscenza) [right=of sapere]{Conoscenza} edge node [auto,swap] {1:N} (sapere);
-      
+  \node[attribute](aconoscenzatitolo)[right=of conoscenza]{Descrizione} edge (conoscenza);
+  \node[attribute](aconoscenzaobminimo)[above=of conoscenza]{Ob. minimo} edge (conoscenza);
+  
+  %    /\
+  % <Oggetto>
+  %    \/
+  \node[relationship] (riguardare) [below=of conoscenza] {Riguarda} edge node [auto, swap] {0:N} (conoscenza);
+  
+  % ------------
+  % |Contenuto|
+  % ------------
+  \node[entity] (contenuto) [below=of riguardare]{Contenuto} edge node [auto,swap] {1:N} (riguardare);
+  \node[attribute](acontenutotitolo)[right=of contenuto]{Descrizione} edge (contenuto);
+  
+  %     /\
+  % <Sviluppa>
+  %     \/
+  \node[relationship] (sviluppare) [below=of competenza] {Sviluppa} edge node [auto, swap] {0:N} (competenza);
+  
+  % -----------
+  % |C. chiave|
+  % -----------
+  \node[entity] (cchiave) [below=of sviluppare]{Comp. chiave} edge node [auto,swap] {1:N} (sviluppare);
+  \node[attribute](acchiaveue)[right=of cchiave]{UE} edge (cchiave);
+  \node[attribute](acchiaveit)[left=of cchiave]{di cittadinanza (DM 139)} edge (cchiave);
+  
+        
   \end{tikzpicture}
 \end{figure}
 \end{document}
